@@ -6,19 +6,28 @@ enum TYPE {
 	INT = 0,
 	DOUBLE = 1,
 	BOOL = 2,
-	STRING = 3,
-	JSON_LIST = 4,
-	VEC = 5
+	CHARS = 3,
+	STRING = 4,
+	JSON_LIST = 5,
+	VEC = 6
 };
+
+
+ostream & operator<<(ostream & os, const string & s) {
+	os << '\"' << s.c_str() << '\"';
+	return os;
+}
+
+
 
 template<typename T>
 ostream & operator<<(ostream & os, const vector<T> &v) {
-	os << "[";
+	os << '[';
 	int size = v.size() - 1;
 	for (int i = 0; i < size; i++) {
 		os << v[i] << ',';
 	}
-	os << v[v.size() - 1] << "]";
+	os << v[v.size() - 1] << ']';
 	return os;
 }
 
@@ -32,7 +41,9 @@ TYPE get_type(T v) {
 		return DOUBLE;
 	} else if (typeid(v) == typeid(bool)) {
 		return BOOL;
-	} else if (typeid(v) == typeid(const char *) || typeid(v) == typeid(string)) {
+	} else if (typeid(v) == typeid(const char *) ){
+		return CHARS;
+	}else if(typeid(v) == typeid(string)) {
 		return STRING;
 	} else if (typeid(v) == typeid(cppJSON_list*)) {
 		return JSON_LIST;
@@ -63,9 +74,12 @@ class cppJSON_element: public cppJSON {
 		cppJSON_element(string s, TYPE t, T v): cppJSON(s, t), value(v) { }
 		void print() {
 			if (type != JSON_LIST) {
-				cout << value << ',' << endl;
+				if (type != CHARS) {
+					cout << value << ',' << endl;
+				} else {
+					cout << '\"' << value << '\"' << ',' << endl;
+				}
 			}
-
 		}
 		~cppJSON_element() { }
 };
@@ -169,7 +183,7 @@ class cppJSON_list {
 				cout << "not found the JSON named " << s << endl;
 				return ;
 			}
-			cout << "\"" << n->name << "\" : ";
+			cout << '\"' << n->name << '\"' << ':';
 			n->print();
 		}
 
@@ -179,12 +193,12 @@ class cppJSON_list {
 			for (int i = 0; i < level; i++) {
 				cout << "    ";
 			}
-			cout << "{" << endl;
+			cout << '{' << endl;
 			while (n) {
 				for (int i = 0; i < level; i++) {
 					cout << "    ";
 				}
-				cout << "\"" << n->name << "\" : ";
+				cout << n->name << ':';
 				if (n->type == JSON_LIST) {
 					cppJSON_element<cppJSON_list*>* ne = dynamic_cast<cppJSON_element<cppJSON_list*>*>(n);
 					cout << endl;
@@ -197,7 +211,7 @@ class cppJSON_list {
 			for (int i = 0; i < level; i++) {
 				cout << "    ";
 			}
-			cout << "}" << endl;
+			cout << '}' << endl;
 		}
 
 };
