@@ -9,7 +9,7 @@ int main() {
 	vector<int> a(3, 100);
 	l->push_back_cppJSON_element("scores", a);
 	l->print();
-	
+
 	cout << endl << endl << "ÐÞ¸Ä²âÊÔ:" << endl << endl;
 	a[2] = 99;
 	l->update_cppJSON_element("scores", a);
@@ -27,8 +27,8 @@ int main() {
 	vector<string> companies = {"Apple", "Xiaomi"};
 	l2->push_back_cppJSON_element("companies", companies);
 	string s("Turing Prize");
-	l2->push_back_cppJSON_element("Award",s);
-	
+	l2->push_back_cppJSON_element("Award", s);
+
 	l->push_back_cppJSON_element("Other Info", l2);
 	l->print();
 

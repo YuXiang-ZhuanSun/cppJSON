@@ -12,13 +12,31 @@ enum TYPE {
 	VEC = 6
 };
 
+class cppJSON_list;
+template<typename T>
+TYPE get_type(T v) {
+
+	if (typeid(v) == typeid(int)) {
+		return INT;
+	} else if (typeid(v) == typeid(double)) {
+		return DOUBLE;
+	} else if (typeid(v) == typeid(bool)) {
+		return BOOL;
+	} else if (typeid(v) == typeid(const char *) ) {
+		return CHARS;
+	} else if (typeid(v) == typeid(string)) {
+		return STRING;
+	} else if (typeid(v) == typeid(cppJSON_list*)) {
+		return JSON_LIST;
+	} else {
+		return VEC;
+	}
+}
 
 ostream & operator<<(ostream & os, const string & s) {
 	os << '\"' << s.c_str() << '\"';
 	return os;
 }
-
-
 
 template<typename T>
 ostream & operator<<(ostream & os, const vector<T> &v) {
@@ -31,26 +49,6 @@ ostream & operator<<(ostream & os, const vector<T> &v) {
 	return os;
 }
 
-class cppJSON_list;
-template<typename T>
-TYPE get_type(T v) {
-
-	if (typeid(v) == typeid(int)) {
-		return INT;
-	} else if (typeid(v) == typeid(double)) {
-		return DOUBLE;
-	} else if (typeid(v) == typeid(bool)) {
-		return BOOL;
-	} else if (typeid(v) == typeid(const char *) ){
-		return CHARS;
-	}else if(typeid(v) == typeid(string)) {
-		return STRING;
-	} else if (typeid(v) == typeid(cppJSON_list*)) {
-		return JSON_LIST;
-	} else {
-		return VEC;
-	}
-}
 
 class cppJSON {
 	public:
