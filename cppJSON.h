@@ -16,12 +16,12 @@ class cppJSON_list;
 template<typename T>
 TYPE get_type(T v) {
 
-	if (typeid(v) == typeid(int)) {
-		return INT;
+	if (typeid(v) == typeid(bool)) {
+		return BOOL;
 	} else if (typeid(v) == typeid(double)) {
 		return DOUBLE;
-	} else if (typeid(v) == typeid(bool)) {
-		return BOOL;
+	} else if (typeid(v) == typeid(int)) {
+		return INT;
 	} else if (typeid(v) == typeid(const char *) ) {
 		return CHARS;
 	} else if (typeid(v) == typeid(string)) {
@@ -37,6 +37,7 @@ ostream & operator<<(ostream & os, const string & s) {
 	os << '\"' << s.c_str() << '\"';
 	return os;
 }
+
 
 template<typename T>
 ostream & operator<<(ostream & os, const vector<T> &v) {
@@ -72,10 +73,18 @@ class cppJSON_element: public cppJSON {
 		cppJSON_element(string s, TYPE t, T v): cppJSON(s, t), value(v) { }
 		void print() {
 			if (type != JSON_LIST) {
-				if (type != CHARS) {
-					cout << value << ',' << endl;
+				if (type == CHARS) {
+					cout << '\"' << value << '\"';
+				} else if (type == BOOL) {
+					cout << boolalpha << value;
 				} else {
-					cout << '\"' << value << '\"' << ',' << endl;
+					cout << value;
+				}
+				if (next) {
+					cout << ',' << endl;
+				} else {
+
+					cout << endl;
 				}
 			}
 		}
@@ -186,7 +195,8 @@ class cppJSON_list {
 		}
 
 
-		void print(int level = 0) {
+		void print(int level = 0, int islast = 1) {
+			int new_islast;
 			cppJSON* n = head;
 			for (int i = 0; i < level; i++) {
 				cout << "    ";
@@ -196,11 +206,15 @@ class cppJSON_list {
 				for (int i = 0; i < level; i++) {
 					cout << "    ";
 				}
+
 				cout << n->name << ':';
 				if (n->type == JSON_LIST) {
+					if (n->next) {
+						new_islast = 0;
+					}
 					cppJSON_element<cppJSON_list*>* ne = dynamic_cast<cppJSON_element<cppJSON_list*>*>(n);
 					cout << endl;
-					ne->value->print(level + 1);
+					ne->value->print(level + 1, new_islast);
 				} else {
 					n->print();
 				}
@@ -209,7 +223,144 @@ class cppJSON_list {
 			for (int i = 0; i < level; i++) {
 				cout << "    ";
 			}
-			cout << '}' << endl;
+			cout << '}';
+			if (!islast) {
+				cout << ',';
+			}
+			cout << endl;
 		}
 
 };
+
+static string skip(const char *s0) {
+	string s;
+	int i = 0;
+	while (s0[i] != '\0') {
+		if (s0[i] != ' ' && s0[i] != '\t') {
+			s.push_back(s0[i]);
+		}
+		if (s0[i] == '\"') {
+			i++;
+			while (s0[i] != '\"') {
+				s.push_back(s0[i]);
+				i++;
+			}
+			s.push_back(s0[i]);
+		}
+		i++;
+	}
+	return s;
+}
+
+double s_to_double(const string s) {
+	istringstream iss(s);
+	double num;
+	iss >> num;
+	return num;
+}
+
+int s_to_int(const string s) {
+	istringstream iss(s);
+	int num;
+	iss >> num;
+	return num;
+}
+
+
+
+cppJSON_list* parse_str(string s, cppJSON_list* l) {
+	unsigned int i = 1;
+	while (s[i] != '}') {
+		//get name
+		int len = 0;
+		if (s[i] != '\"') {
+			return NULL;
+		}
+		i++;
+		while (s[i + len] != '\"') {
+			len++;
+		}
+		string name = s.substr(i, len);
+		i = i + len + 1;
+		if (s[i] != ':') {
+			return NULL;
+		}
+		i++;
+
+		//get value
+		if (s[i] == '{') {
+			len = 1;
+			while (s[i + len] != '}') {
+				len++;
+			}
+			cppJSON_list* nl = new cppJSON_list();
+			if (!parse_str(s.substr(i, len + 1), nl)) {
+				return NULL;
+			}
+			l->push_back_cppJSON_element(name, nl);
+			i = i + len + 1;
+		}
+		if (s[i] == 'f') {
+			if (s.substr(i, 5) == "false") {
+				l->push_back_cppJSON_element(name, false);
+				i += 5;
+			} else {
+				return NULL;
+			}
+		}
+		if (s[i] == 't') {
+
+			if (s.substr(i, 4) == "true") {
+				l->push_back_cppJSON_element(name, true);
+				i += 4;
+			} else {
+				return NULL;
+			}
+		}
+		if (s[i] <= '9' && s[i] >= '0') {
+			len = 1;
+			while (s[i + len] <= '9' && s[i + len] >= '0') {
+				len++;
+			}
+			if (s[i + len] == '.') {
+				len++;
+				while (s[i + len] <= '9' && s[i + len] >= '0') {
+					len++;
+				}
+				double vd = s_to_double(s.substr(i, len));
+				l->push_back_cppJSON_element(name, vd);
+				i =	i + len;
+			} else {
+				int vi = s_to_int(s.substr(i, len));
+				l->push_back_cppJSON_element(name, vi);
+				i = i + len;
+			}
+
+		}
+		if (s[i] == '\"') {
+			len = 1;
+			while (s[i + len] != '\"') {
+				len++;
+			}
+			l->push_back_cppJSON_element(name, s.substr(i + 1, len - 1));
+			i = i + len + 1;
+		}
+		if (s[i] == ',') {
+			i++;
+		} else {
+			return l;
+		}
+	}
+	return l;
+}
+
+cppJSON_list * cppJSON_Parse(const char *s0) {
+	string s = skip(s0);
+	if (s[0] == '{') {
+		cppJSON_list *l = new cppJSON_list();
+		return parse_str(s, l);
+	} else {
+		return NULL;
+	}
+
+}
