@@ -26,7 +26,7 @@
 
 
 
-使用愉快，**只差支持解析字符串中的数组了**。
+使用愉快，**未来会完善：解析字符串时，支持数组类型的值(value)**。
 
 参考：
 * [cJSON](https://github.com/DaveGamble/cJSON)

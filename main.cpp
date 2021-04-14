@@ -1,10 +1,9 @@
-#include <iostream>
 #include "cppJSON.h"
 /* run this program using the console pauser or add your own getch, system("pause") or input loop */
 
 int main() {
 
-	//ÑùÀı£º´´½¨,ĞŞ¸Ä,´òÓ¡JSON
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½Ş¸ï¿½,ï¿½ï¿½Ó¡JSON
 	cppJSON_list * l = new cppJSON_list();
 	l->push_back_cppJSON_element("name", "Jiyu Zhu");
 	l->push_back_cppJSON_element("age", 20);
@@ -12,7 +11,7 @@ int main() {
 	l->push_back_cppJSON_element("scores", a);
 	l->print();
 
-	cout << endl << endl << "ĞŞ¸Ä²âÊÔ:" << endl << endl;
+	cout << endl << endl << "ï¿½Ş¸Ä²ï¿½ï¿½ï¿½:" << endl << endl;
 	a[2] = 99;
 	l->update_cppJSON_element("scores", a);
 	l->push_back_cppJSON_element("rank", 0.01);
@@ -21,7 +20,7 @@ int main() {
 	l->delete_cppJSON("age");
 	l->print();
 
-	cout  << endl << endl << "Ì×ÍŞ²âÊÔ:" << endl << endl;
+	cout  << endl << endl << "ï¿½ï¿½ï¿½Ş²ï¿½ï¿½ï¿½:" << endl << endl;
 
 	cppJSON_list * l2 = new cppJSON_list();
 
@@ -36,9 +35,9 @@ int main() {
 	l->push_back_cppJSON_element("alive", true);
 	l->print();
 
-	//½âÎöJSON
+	//ï¿½ï¿½ï¿½ï¿½JSON
 
-	cout << endl << endl << "½âÎöJSON²âÊÔ£º" << endl;
+	cout << endl << endl << "ï¿½ï¿½ï¿½ï¿½JSONï¿½ï¿½ï¿½Ô£ï¿½" << endl;
 	const char *message =
 	    "{                              \
 	    \"name\":\"mculo   ver666\",   \
@@ -60,6 +59,8 @@ int main() {
 	if (l3) {
 		l3->print();
 	}
+
+	delete l3;
 
 
 

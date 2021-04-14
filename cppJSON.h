@@ -103,6 +103,14 @@ class cppJSON_list {
 		cppJSON_list(cppJSON *n) {
 			head = tail = n;
 		}
+		
+		~cppJSON_list() {
+			while(head){
+				cppJSON* c=head;
+				head=head->next;
+				delete c;
+			}
+		} 
 
 		cppJSON* find(string s) {
 			cppJSON* n = head;
