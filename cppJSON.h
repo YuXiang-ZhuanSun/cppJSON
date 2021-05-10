@@ -362,8 +362,6 @@ cppJSON_list* parse_str(string s, cppJSON_list* l) {
 		}
 		if (s[i] == ',') {
 			i++;
-		} else {
-			return l;
 		}
 	}
 	return l;

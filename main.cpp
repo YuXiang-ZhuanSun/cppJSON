@@ -79,8 +79,8 @@ int main() {
 		            \"zip-code\": 111111,\
 		            \"city\":          \
 					    {                  \
-							\"Shang Hai\":1,  \
-							\"Bei Jing\":2    \
+							\"Shanghai\":1,  \
+							\"Beijing\":2    \
 						}               \
 		        },                      \
 		    \"skill\": \"c++\",\
