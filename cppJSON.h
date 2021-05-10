@@ -298,8 +298,15 @@ cppJSON_list* parse_str(string s, cppJSON_list* l) {
 		//get value
 		if (s[i] == '{') {
 			len = 1;
-			while (s[i + len] != '}') {
+			int depth=1; 
+			
+			while (depth) {
 				len++;
+				if(s[i+len]=='{'){
+					depth++;
+				}else if(s[i+len]=='}'){
+					depth--;
+				}
 			}
 			cppJSON_list* nl = new cppJSON_list();
 			if (!parse_str(s.substr(i, len + 1), nl)) {
